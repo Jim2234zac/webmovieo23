@@ -1,10 +1,3 @@
-# 🎬 AnimeThaiHD - Production Ready
-
-Complete anime streaming platform with security hardening, responsive design, and modern UX.
-
-**Status**: ✅ **PRODUCTION READY** | Quality Score: **A (88%)**
-
----
 
 ## 📋 Quick Start
 

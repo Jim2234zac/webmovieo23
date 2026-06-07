@@ -5,11 +5,27 @@ require_once __DIR__ . '/includes/sidebar.php';
 
 $stats = getDashboardStats();
 $flash = getFlashMessage();
-$recent = fetchAll(
-    'SELECT m.*, c.name_th AS category_name FROM movies m
-     LEFT JOIN categories c ON m.category_id = c.id
-     ORDER BY m.created_at DESC LIMIT 5'
-);
+
+// รับค่าการค้นหา
+$search = trim($_REQUEST['search'] ?? '');
+
+// ถ้ามีการค้นหา แสดงผลลัพธ์การค้นหา
+if ($search !== '') {
+    $movies = fetchAll(
+        'SELECT m.*, c.name_th AS category_name FROM movies m
+         LEFT JOIN categories c ON m.category_id = c.id
+         WHERE m.title_th LIKE ? OR m.title LIKE ?
+         ORDER BY m.created_at DESC',
+        ["%$search%", "%$search%"]
+    );
+} else {
+    // แสดงหนังล่าสุด 5 เรื่อง
+    $movies = fetchAll(
+        'SELECT m.*, c.name_th AS category_name FROM movies m
+         LEFT JOIN categories c ON m.category_id = c.id
+         ORDER BY m.created_at DESC LIMIT 5'
+    );
+}
 ?>
 
 <div class="admin-top">
@@ -19,6 +35,21 @@ $recent = fetchAll(
 
 <?php if ($flash): ?><div class="alert alert-<?= $flash['type'] ?>"><?= e($flash['message']) ?></div><?php endif; ?>
 
+<div class="panel">
+    <form method="GET" action="index.php" class="form-inline">
+        <div class="form-group">
+            <label>ค้นหาหนัง</label>
+            <input type="text" name="search" value="<?= e($search) ?>" placeholder="ชื่อไทย หรือ ชื่ออังกฤษ">
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">ค้นหา</button>
+            <?php if ($search !== ''): ?>
+            <a href="index.php" class="btn btn-outline">รีเซ็ต</a>
+            <?php endif; ?>
+        </div>
+    </form>
+</div>
+
 <div class="stats-grid">
     <div class="stat-card"><div class="stat-value"><?= number_format($stats['movies']) ?></div><div class="stat-label">หนัง/อนิเมะ</div></div>
     <div class="stat-card"><div class="stat-value"><?= number_format($stats['episodes']) ?></div><div class="stat-label">ตอน</div></div>
@@ -26,12 +57,12 @@ $recent = fetchAll(
     <div class="stat-card"><div class="stat-value"><?= number_format($stats['views']) ?></div><div class="stat-label">ยอดดูรวม</div></div>
 </div>
 
-<h2 class="admin-subtitle">หนังล่าสุด</h2>
+<h2 class="admin-subtitle"><?= $search !== '' ? 'ผลการค้นหา (' . count($movies) . ' รายการ)' : 'หนังล่าสุด' ?></h2>
 <div class="table-wrap">
     <table class="data-table">
         <thead><tr><th>ชื่อ</th><th>หมวด</th><th>สถานะ</th><th>ยอดดู</th></tr></thead>
         <tbody>
-        <?php foreach ($recent as $m): ?>
+        <?php foreach ($movies as $m): ?>
         <tr>
             <td><?= e($m['title_th']) ?></td>
             <td><?= e($m['category_name'] ?? '-') ?></td>

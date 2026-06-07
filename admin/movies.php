@@ -42,6 +42,14 @@ if (!empty($where)) {
 
 $sql .= ' ORDER BY m.id DESC';
 
+// Debug: แสดง query และ params
+if ($search !== '' || $statusFilter !== '') {
+    error_log("Search: " . $search);
+    error_log("Status: " . $statusFilter);
+    error_log("SQL: " . $sql);
+    error_log("Params: " . print_r($params, true));
+}
+
 $movies = fetchAll($sql, $params);
 ?>
 
@@ -51,8 +59,14 @@ $movies = fetchAll($sql, $params);
 </div>
 <?php if ($flash): ?><div class="alert alert-<?= $flash['type'] ?>"><?= e($flash['message']) ?></div><?php endif; ?>
 
+<?php if ($search !== '' || $statusFilter !== ''): ?>
+<div class="alert alert-info">
+    <strong>Debug:</strong> ค้นหา: "<?= e($search) ?>" | สถานะ: "<?= e($statusFilter) ?>" | พบ <?= count($movies) ?> รายการ
+</div>
+<?php endif; ?>
+
 <div class="panel">
-    <form method="GET" class="form-inline">
+    <form method="GET" action="movies.php" class="form-inline">
         <div class="form-group">
             <label>ค้นหาหนัง</label>
             <input type="text" name="search" value="<?= e($search) ?>" placeholder="ชื่อไทย หรือ ชื่ออังกฤษ">

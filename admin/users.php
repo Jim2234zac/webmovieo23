@@ -5,6 +5,37 @@ require_once __DIR__ . '/includes/sidebar.php';
 
 $flash = getFlashMessage();
 
+// ลบผู้ใช้
+if (isset($_GET['delete'])) {
+    $deleteId = (int)$_GET['delete'];
+    $csrfToken = $_GET['csrf_token'] ?? '';
+    
+    if (!verifyCsrfToken($csrfToken)) {
+        flashMessage('error', 'ข้อความรักษาความปลอดภัยไม่ถูกต้อง');
+        redirect(SITE_URL . '/admin/users.php');
+    }
+    
+    // ป้องกันไม่ให้ลบตัวเอง
+    if ($deleteId === $_SESSION['user_id']) {
+        flashMessage('error', 'ไม่สามารถลบตัวเองได้');
+        redirect(SITE_URL . '/admin/users.php');
+    }
+    
+    $user = fetchOne('SELECT * FROM users WHERE id = ?', [$deleteId]);
+    if (!$user) {
+        flashMessage('error', 'ไม่พบผู้ใช้');
+        redirect(SITE_URL . '/admin/users.php');
+    }
+    
+    $ok = execute('DELETE FROM users WHERE id = ?', [$deleteId]);
+    if ($ok) {
+        flashMessage('success', 'ลบผู้ใช้เรียบร้อยแล้ว');
+    } else {
+        flashMessage('error', 'ไม่สามารถลบผู้ใช้ได้');
+    }
+    redirect(SITE_URL . '/admin/users.php');
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $csrfToken = $_POST['csrf_token'] ?? '';
     if (!verifyCsrfToken($csrfToken)) {
@@ -79,7 +110,7 @@ $users = fetchAll('SELECT id, username, email, role, created_at FROM users ORDER
 <h2 class="admin-subtitle">รายการผู้ใช้</h2>
 <div class="table-wrap">
     <table class="data-table">
-        <thead><tr><th>ชื่อผู้ใช้</th><th>อีเมล</th><th>บทบาท</th><th>วันที่สร้าง</th></tr></thead>
+        <thead><tr><th>ชื่อผู้ใช้</th><th>อีเมล</th><th>บทบาท</th><th>วันที่สร้าง</th><th>จัดการ</th></tr></thead>
         <tbody>
         <?php foreach ($users as $u): ?>
         <tr>
@@ -87,6 +118,15 @@ $users = fetchAll('SELECT id, username, email, role, created_at FROM users ORDER
             <td><?= e($u['email']) ?></td>
             <td><?= e($u['role']) ?></td>
             <td><?= e($u['created_at']) ?></td>
+            <td>
+                <?php if ($u['id'] !== $_SESSION['user_id']): ?>
+                <a href="?delete=<?= $u['id'] ?>&csrf_token=<?= generateCsrfToken() ?>" 
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('ยืนยันที่จะลบผู้ใช้: <?= e($u['username']) ?>?')">ลบ</a>
+                <?php else: ?>
+                <span class="text-muted">ตัวเอง</span>
+                <?php endif; ?>
+            </td>
         </tr>
         <?php endforeach; ?>
         </tbody>

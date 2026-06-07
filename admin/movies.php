@@ -10,12 +10,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 
 require_once __DIR__ . '/includes/sidebar.php';
 $flash = getFlashMessage();
-$movies = fetchAll(
-    'SELECT m.*, c.name_th AS category_name,
-     (SELECT COUNT(*) FROM episodes WHERE movie_id = m.id) AS ep_count
-     FROM movies m LEFT JOIN categories c ON m.category_id = c.id
-     ORDER BY m.id DESC'
-);
+
+// รับค่าการค้นหาและกรอง
+$search = trim($_GET['search'] ?? '');
+$statusFilter = $_GET['status'] ?? '';
+
+// สร้าง query พื้นฐาน
+$sql = 'SELECT m.*, c.name_th AS category_name,
+        (SELECT COUNT(*) FROM episodes WHERE movie_id = m.id) AS ep_count
+        FROM movies m LEFT JOIN categories c ON m.category_id = c.id';
+$params = [];
+
+// เพิ่มเงื่อนไขการค้นหา
+$where = [];
+if ($search !== '') {
+    $where[] = '(m.title_th LIKE ? OR m.title_en LIKE ?)';
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+}
+
+// เพิ่มเงื่อนไขกรองสถานะ
+if ($statusFilter !== '' && in_array($statusFilter, ['ongoing', 'completed'])) {
+    $where[] = 'm.status = ?';
+    $params[] = $statusFilter;
+}
+
+// รวมเงื่อนไข WHERE
+if (!empty($where)) {
+    $sql .= ' WHERE ' . implode(' AND ', $where);
+}
+
+$sql .= ' ORDER BY m.id DESC';
+
+$movies = fetchAll($sql, $params);
 ?>
 
 <div class="admin-top">
@@ -23,6 +50,27 @@ $movies = fetchAll(
     <a href="movies_add.php" class="btn btn-primary btn-sm">+ เพิ่มหนัง</a>
 </div>
 <?php if ($flash): ?><div class="alert alert-<?= $flash['type'] ?>"><?= e($flash['message']) ?></div><?php endif; ?>
+
+<div class="panel">
+    <form method="GET" class="form-inline">
+        <div class="form-group">
+            <label>ค้นหาหนัง</label>
+            <input type="text" name="search" value="<?= e($search) ?>" placeholder="ชื่อไทย หรือ ชื่ออังกฤษ">
+        </div>
+        <div class="form-group">
+            <label>สถานะ</label>
+            <select name="status">
+                <option value="">ทั้งหมด</option>
+                <option value="ongoing" <?= $statusFilter === 'ongoing' ? 'selected' : '' ?>>กำลังฉาย</option>
+                <option value="completed" <?= $statusFilter === 'completed' ? 'selected' : '' ?>>จบแล้ว</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">ค้นหา</button>
+            <a href="movies.php" class="btn btn-outline">รีเซ็ต</a>
+        </div>
+    </form>
+</div>
 
 <div class="table-wrap">
     <table class="data-table">

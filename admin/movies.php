@@ -24,7 +24,7 @@ $params = [];
 // เพิ่มเงื่อนไขการค้นหา
 $where = [];
 if ($search !== '') {
-    $where[] = '(m.title_th LIKE ? OR m.title_en LIKE ?)';
+    $where[] = '(m.title_th LIKE ? OR m.title LIKE ?)';
     $params[] = "%$search%";
     $params[] = "%$search%";
 }
@@ -66,8 +66,7 @@ $movies = fetchAll($sql, $params);
 <?php endif; ?>
 
 <div class="panel">
-    <form method="POST" action="movies.php" class="form-inline">
-        <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+    <form method="GET" action="movies.php" class="form-inline">
         <div class="form-group">
             <label>ค้นหาหนัง</label>
             <input type="text" name="search" value="<?= e($search) ?>" placeholder="ชื่อไทย หรือ ชื่ออังกฤษ">

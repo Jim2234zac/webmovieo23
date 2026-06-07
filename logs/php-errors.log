@@ -1,0 +1,4 @@
+[06-Jun-2026 13:59:12 Asia/Bangkok] PHP Fatal error:  Uncaught Error: Call to undefined function redirect() in /var/www/html/admin/fix_banners.php:21
+Stack trace:
+#0 {main}
+  thrown in /var/www/html/admin/fix_banners.php on line 21

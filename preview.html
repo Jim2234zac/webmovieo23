@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimeTH - ตัวอย่างหน้าเว็บ</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .preview-banner {
+            background: linear-gradient(135deg, #4a9eff33, #7c3aed33);
+            border: 1px dashed #4a9eff;
+            color: #4a9eff;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.85rem;
+            position: fixed;
+            top: 64px;
+            left: 0; right: 0;
+            z-index: 9999;
+        }
+        body.has-preview-banner .main-wrapper { margin-top: 100px !important; }
+        body.has-preview-banner .banner-top { margin-top: 100px; }
+    </style>
+</head>
+<body class="has-preview-banner">
+
+<div class="preview-banner">
+    📌 โหมดตัวอย่าง (Static Preview) — เปิดไฟล์นี้ในเบราว์เซอร์ได้เลย ไม่ต้องติดตั้ง PHP/MySQL
+    &nbsp;|&nbsp; สำหรับใช้งานจริง ต้องรันผ่าน XAMPP หรือ Docker
+</div>
+
+<header class="site-header">
+    <button class="menu-toggle" aria-label="เมนู">☰</button>
+    <a href="#" class="logo"><span class="logo-icon">🎬</span> AnimeTH</a>
+    <ul class="nav-menu">
+        <li><a href="#" class="active">หน้าแรก</a></li>
+        <li><a href="#">กำลังฉาย</a></li>
+        <li><a href="#">จบแล้ว</a></li>
+    </ul>
+    <form class="search-form" onsubmit="return false;">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="ค้นหาอนิเมะ...">
+    </form>
+    <div class="header-actions">
+        <a href="#" class="btn btn-primary btn-sm"><span>เข้าสู่ระบบ</span></a>
+    </div>
+</header>
+
+<div class="banner-top">
+    <a href="https://example.com" target="_blank" rel="noopener noreferrer">
+        <img src="https://picsum.photos/seed/banner-top/1200/120" alt="Banner Top">
+    </a>
+</div>
+
+<div class="banner-side left">
+    <a href="https://example.com" target="_blank" rel="noopener noreferrer">
+        <img src="https://picsum.photos/seed/banner-left/160/600" alt="Banner Left">
+    </a>
+</div>
+<div class="banner-side right">
+    <a href="https://example.com" target="_blank" rel="noopener noreferrer">
+        <img src="https://picsum.photos/seed/banner-right/160/600" alt="Banner Right">
+    </a>
+</div>
+
+<div class="main-wrapper" style="margin-top:0;">
+    <div class="content-layout">
+        <aside class="sidebar">
+            <h3>หมวดหมู่</h3>
+            <ul class="category-list">
+                <li><a href="#" class="active"><span class="cat-icon">📺</span> ทั้งหมด</a></li>
+                <li><a href="#"><span class="cat-icon">🏷️</span> แอ็คชั่น</a></li>
+                <li><a href="#"><span class="cat-icon">🏷️</span> ผจญภัย</a></li>
+                <li><a href="#"><span class="cat-icon">🏷️</span> ตลก</a></li>
+                <li><a href="#"><span class="cat-icon">🏷️</span> ดราม่า</a></li>
+                <li><a href="#"><span class="cat-icon">🏷️</span> แฟนตาซี</a></li>
+                <li><a href="#"><span class="cat-icon">🏷️</span> โรแมนติก</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="section-header">
+                <h2>อนิเมะล่าสุด</h2>
+                <span style="color:var(--text-muted);font-size:0.85rem;">6 เรื่อง (ตัวอย่าง)</span>
+            </div>
+
+            <div class="movie-grid" id="movie-grid"></div>
+        </main>
+    </div>
+</div>
+
+<div class="banner-bottom">
+    <a href="https://example.com" target="_blank" rel="noopener noreferrer">
+        <img src="https://picsum.photos/seed/banner-bottom/1200/80" alt="Banner Bottom">
+    </a>
+</div>
+
+<footer class="site-footer">
+    <p>&copy; 2026 AnimeTH — ดูอนิเมะออนไลน์ ซับไทย พากย์ไทย (โหมดตัวอย่าง)</p>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script>
+const movies = [
+    { title: 'ดาบพิฆาตอสูร', ep: 26, year: 2019, views: 15420, status: 'ongoing', sub: 'sub', img: 'demonslayer' },
+    { title: 'วันพีซ', ep: 1095, year: 1999, views: 28900, status: 'ongoing', sub: 'sub', img: 'onepiece' },
+    { title: 'สไป x แฟมิลี่', ep: 25, year: 2022, views: 12300, status: 'completed', sub: 'both', img: 'spyfamily' },
+    { title: 'ผ่าพิภพไททัน', ep: 87, year: 2013, views: 35000, status: 'completed', sub: 'sub', img: 'aot' },
+    { title: 'มหาเวทย์ผนึกกาตอน', ep: 24, year: 2020, views: 18700, status: 'ongoing', sub: 'both', img: 'jjk' },
+    { title: 'มายฮีโร่ อคาเดเมีย', ep: 138, year: 2016, views: 21000, status: 'ongoing', sub: 'dub', img: 'mha' },
+];
+
+const subBadge = { sub: '<span class="badge badge-sub">ซับไทย</span>', dub: '<span class="badge badge-dub">พากย์ไทย</span>', both: '<span class="badge badge-both">ซับ+พากย์</span>' };
+const statusBadge = { ongoing: '<span class="badge badge-ongoing">กำลังฉาย</span>', completed: '<span class="badge badge-completed">จบแล้ว</span>' };
+
+document.getElementById('movie-grid').innerHTML = movies.map(m => `
+    <article class="movie-card">
+        <a href="#">
+            <div class="movie-thumb">
+                <img src="https://picsum.photos/seed/${m.img}/300/400" alt="${m.title}" loading="lazy">
+                <div class="movie-badges">${statusBadge[m.status]}${subBadge[m.sub]}</div>
+            </div>
+            <div class="movie-info">
+                <h3>${m.title}</h3>
+                <div class="episode-info">ตอนที่ ${m.ep} · ${m.year}</div>
+                <div class="views">👁 ${m.views.toLocaleString()} ครั้ง</div>
+            </div>
+        </a>
+    </article>
+`).join('');
+</script>
+</body>
+</html>

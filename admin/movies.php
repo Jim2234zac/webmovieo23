@@ -61,7 +61,9 @@ $movies = fetchAll($sql, $params);
 
 <?php if ($search !== '' || $statusFilter !== ''): ?>
 <div class="alert alert-info">
-    <strong>Debug:</strong> ค้นหา: "<?= e($search) ?>" | สถานะ: "<?= e($statusFilter) ?>" | พบ <?= count($movies) ?> รายการ
+    <strong>Debug:</strong> ค้นหา: "<?= e($search) ?>" | สถานะ: "<?= e($statusFilter) ?>" | พบ <?= count($movies) ?> รายการ<br>
+    <strong>SQL:</strong> <?= e($sql) ?><br>
+    <strong>Params:</strong> <?= e(print_r($params, true)) ?>
 </div>
 <?php endif; ?>
 

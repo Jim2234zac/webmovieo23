@@ -11,9 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 require_once __DIR__ . '/includes/sidebar.php';
 $flash = getFlashMessage();
 
-// รับค่าการค้นหาและกรอง
-$search = trim($_GET['search'] ?? '');
-$statusFilter = $_GET['status'] ?? '';
+// รับค่าการค้นหาและกรอง (รองรับทั้ง GET และ POST)
+$search = trim($_REQUEST['search'] ?? '');
+$statusFilter = $_REQUEST['status'] ?? '';
 
 // สร้าง query พื้นฐาน
 $sql = 'SELECT m.*, c.name_th AS category_name,
@@ -66,7 +66,8 @@ $movies = fetchAll($sql, $params);
 <?php endif; ?>
 
 <div class="panel">
-    <form method="GET" action="movies.php" class="form-inline">
+    <form method="POST" action="movies.php" class="form-inline">
+        <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
         <div class="form-group">
             <label>ค้นหาหนัง</label>
             <input type="text" name="search" value="<?= e($search) ?>" placeholder="ชื่อไทย หรือ ชื่ออังกฤษ">
